@@ -59,14 +59,12 @@ player_walk_up_2 = pygame.transform.scale(player_walk_up_2, player_size)
 npc_image = pygame.image.load('./images/document.png').convert_alpha()
 npc_image = pygame.transform.scale(npc_image, npc_size)
 
-
-
-
 npc_sprite = pygame.Surface((50, 50))
 npc_sprite.fill(NPC_COLOR)
 
 # Load the background and image and scale it to fit the screen size
 background_image = pygame.image.load("./images/office.png").convert()
+
 background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))  # Scale the background
 
 # Law NPCs with detailed information
@@ -334,7 +332,7 @@ def office_level():
                 screen.blit(player_walk_down_2, (player_pos[0], player_pos[1]))
         else:
             # When idle, use the "look" images
-            screen.blit(player_sprite_right, (player_pos[0], player_pos[1]))  # Default to right-facing idle state
+            screen.blit(player_sprite_down, (player_pos[0], player_pos[1]))  # Default to right-facing idle state
 
         # Reset current_details if no NPC is nearby
         current_details = None
@@ -411,8 +409,108 @@ def office_level():
         exit_button.draw(screen)
         pygame.display.flip()
 
+def quiz():
+    # Initialize a new Pygame window for the quiz
+    quiz_screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption("Quiz Level")
 
-    
+    # Load the background image
+    background_image = pygame.image.load("./images/office-boss.png")
+    background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))  # Scale the image to fit the screen
+
+    # Player settings
+    player_pos = [350, HEIGHT // 2]
+    player_speed = 0.1
+    player_size = (75, 75)
+    VERTICAL_SPEED = 0.1  # Added vertical speed
+    walking_animation_frame = 0  # Track walking animation frame
+
+    # Load Sprites
+    player_sprite_down = pygame.image.load('./images/look_down.png').convert_alpha()
+    player_sprite_left = pygame.image.load('./images/look_left.png').convert_alpha()
+    player_sprite_right = pygame.image.load('./images/look_right.png').convert_alpha()
+    player_sprite_up = pygame.image.load('./images/look_up.png').convert_alpha()
+
+    player_walk_down_1 = pygame.image.load('./images/walk_down_1.png').convert_alpha()
+    player_walk_down_2 = pygame.image.load('./images/walk_down_2.png').convert_alpha()
+    player_walk_left_1 = pygame.image.load('./images/walk_left_1.png').convert_alpha()
+    player_walk_left_2 = pygame.image.load('./images/walk_left_2.png').convert_alpha()
+    player_walk_right_1 = pygame.image.load('./images/walk_right_1.png').convert_alpha()
+    player_walk_right_2 = pygame.image.load('./images/walk_right_2.png').convert_alpha()
+    player_walk_up_1 = pygame.image.load('./images/walk_up_1.png').convert_alpha()
+    player_walk_up_2 = pygame.image.load('./images/walk_up_2.png').convert_alpha()
+
+    # Scale the images to the size of the player
+    player_sprite_down = pygame.transform.scale(player_sprite_down, player_size)
+    player_sprite_left = pygame.transform.scale(player_sprite_left, player_size)
+    player_sprite_right = pygame.transform.scale(player_sprite_right, player_size)
+    player_sprite_up = pygame.transform.scale(player_sprite_up, player_size)
+
+    player_walk_down_1 = pygame.transform.scale(player_walk_down_1, player_size)
+    player_walk_down_2 = pygame.transform.scale(player_walk_down_2, player_size)
+    player_walk_left_1 = pygame.transform.scale(player_walk_left_1, player_size)
+    player_walk_left_2 = pygame.transform.scale(player_walk_left_2, player_size)
+    player_walk_right_1 = pygame.transform.scale(player_walk_right_1, player_size)
+    player_walk_right_2 = pygame.transform.scale(player_walk_right_2, player_size)
+    player_walk_up_1 = pygame.transform.scale(player_walk_up_1, player_size)
+    player_walk_up_2 = pygame.transform.scale(player_walk_up_2, player_size)
+
+    # Main loop for the quiz
+    quiz_running = True
+    while quiz_running:
+        # Fill the screen with the background image
+        quiz_screen.blit(background_image, (0, 0))
+
+        # Handle events (close the quiz when the window is closed)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        # Get the state of all keys
+        keys = pygame.key.get_pressed()
+
+        # Horizontal and Vertical movement
+        if keys[pygame.K_RIGHT]:
+            player_pos[0] += player_speed
+            walking_animation_frame = (walking_animation_frame + 1) % 2  # Toggle animation frame
+        elif keys[pygame.K_LEFT]:
+            player_pos[0] -= player_speed
+            walking_animation_frame = (walking_animation_frame + 1) % 2  # Toggle animation frame
+        elif keys[pygame.K_UP]:
+            player_pos[1] -= VERTICAL_SPEED
+            walking_animation_frame = (walking_animation_frame + 1) % 2  # Toggle animation frame
+        elif keys[pygame.K_DOWN]:
+            player_pos[1] += VERTICAL_SPEED
+            walking_animation_frame = (walking_animation_frame + 1) % 2  # Toggle animation frame
+
+        # Draw the appropriate walking sprite
+        if keys[pygame.K_RIGHT]:
+            if walking_animation_frame == 0:
+                quiz_screen.blit(player_walk_right_1, player_pos)
+            else:
+                quiz_screen.blit(player_walk_right_2, player_pos)
+        elif keys[pygame.K_LEFT]:
+            if walking_animation_frame == 0:
+                quiz_screen.blit(player_walk_left_1, player_pos)
+            else:
+                quiz_screen.blit(player_walk_left_2, player_pos)
+        elif keys[pygame.K_UP]:
+            if walking_animation_frame == 0:
+                quiz_screen.blit(player_walk_up_1, player_pos)
+            else:
+                quiz_screen.blit(player_walk_up_2, player_pos)
+        elif keys[pygame.K_DOWN]:
+            if walking_animation_frame == 0:
+                quiz_screen.blit(player_walk_down_1, player_pos)
+            else:
+                quiz_screen.blit(player_walk_down_2, player_pos)
+        else:
+            # Idle (not moving)
+            quiz_screen.blit(player_sprite_down, player_pos)  # Default to down-facing idle sprite
+
+        pygame.display.flip()  # Update the display
+
 
 if __name__ == "__main__":
     office_level()
