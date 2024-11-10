@@ -16,6 +16,7 @@ BLUE = (70, 130, 180)
 RED = (200, 50, 50)
 NPC_COLOR = (180, 100, 50)
 GREEN = (34, 139, 34)
+DIALOGUE_BOX_COLOR = (0, 0, 0, 128)
 
 # Player settings
 player_pos = [350, HEIGHT // 2]
@@ -341,22 +342,29 @@ def office_level():
             info_x = 50
             info_y = HEIGHT // 4  # Center the box vertically
 
-            # Draw the white background for the legal info
-            pygame.draw.rect(screen, WHITE, pygame.Rect(info_x, info_y, info_width, info_height))
+         
+    
+            info_box_surface = pygame.Surface((info_width, info_height), pygame.SRCALPHA)
+
+            # Fill the surface with a semi-transparent black (you can adjust the alpha value for transparency)
+            info_box_surface.fill((0, 0, 0, 128))  # (R, G, B, A), where A is the alpha (transparency)
+
+            # Blit the surface onto the main screen
+            screen.blit(info_box_surface, (info_x, info_y))
 
             # Draw the title and description with more space in between
-            y_offset = draw_text_wrapped(screen, f"{current_details['title']}", title_font, BLACK, info_x + 10, info_y + 10, info_width - 20)
+            y_offset = draw_text_wrapped(screen, f"{current_details['title']}", title_font, WHITE, info_x + 10, info_y + 10, info_width - 20)
             
             # Add additional vertical space (increase this value for more spacing)
             y_offset += 20  # Space between title and description
-            y_offset = draw_text_wrapped(screen, f"{current_details['description']}", main_font, BLACK, info_x + 10, y_offset, info_width - 20)
+            y_offset = draw_text_wrapped(screen, f"{current_details['description']}", main_font, WHITE, info_x + 10, y_offset, info_width - 20)
 
             # Add more space between the description and the details
             y_offset += 20  # Space between description and details
 
             # Draw detailed information with additional space between each point
             for detail in current_details["details"]:
-                y_offset = draw_text_wrapped(screen, detail, detail_font, BLACK, info_x + 10, y_offset, info_width - 20)
+                y_offset = draw_text_wrapped(screen, detail, detail_font, WHITE, info_x + 10, y_offset, info_width - 20)
                 y_offset += 10  # Space between each detail
 
         # Update the remaining text only when space is pressed and an NPC is interacted with
