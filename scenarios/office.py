@@ -193,6 +193,7 @@ class Button:
                 return True
         return False
 
+
 def draw_text_wrapped(surface: pygame.Surface, text: str, font: pygame.font.Font, color: Tuple[int, int, int], x: int, y: int, max_width: int) -> int:
     words = text.split()
     lines = []
@@ -374,30 +375,27 @@ def office_level():
             space_pressed = False  # Reset space flag after updating
 
         # Draw exit logic
-        exit_x = npc_positions[-1][0] + 400 + player_x_offset
-        exit_rect = pygame.Rect(exit_x, HEIGHT // 2, 50, 50)
+        exit_x = WIDTH - 150  # Button width is 150
+        exit_y = HEIGHT - 50  # Button height is 50
+        exit_rect = pygame.Rect(exit_x, (HEIGHT // 2) + 900, 50, 50)
         
         # Only allow exit if all NPCs have been visited
         if len(visited_npcs) == len(npc_positions):
-            pygame.draw.rect(screen, GREEN, exit_rect)  # Green exit means it's available
+            button_text = "Next Level"
+            button_color = GREEN
             if exit_rect.collidepoint(player_pos[0] - player_x_offset, player_pos[1]):
-                quiz()
-                return
+                # Trigger the quiz or next level logic when clicked
+                quiz()  # Call your quiz function here (or next level logic)
         else:
-            pygame.draw.rect(screen, RED, exit_rect)  # Red exit means player needs to visit more NPCs
-            # Draw instruction about visiting all NPCs
+            button_text = "Exit"
+            button_color = RED
             remaining_text = main_font.render(f"Find all {len(npc_positions) - len(visited_npcs)} remaining legal documents", True, WHITE)
             screen.blit(remaining_text, (WIDTH // 2 - remaining_text.get_width() // 2, 20))
-
+        exit_button = Button(exit_x, exit_y, 150, 50, button_text, button_color)
+        exit_button.draw(screen)
         pygame.display.flip()
 
 
-
-    # Show completion screen
-    screen.fill(WHITE)
-    completion_text = title_font.render("Congratulations! Tutorial Complete!", True, BLACK)
-    screen.blit(completion_text, (WIDTH // 2 - completion_text.get_width() // 2, HEIGHT // 2))
-    pygame.display.flip()
     
     # Wait for a moment
     pygame.time.wait(3000)
