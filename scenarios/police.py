@@ -13,6 +13,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Canadian Law Adventure")
 
 # Colors
+
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 DIALOGUE_BOX_COLOR = (0, 0, 0, 128)  # Semi-transparent black for the dialogue box
