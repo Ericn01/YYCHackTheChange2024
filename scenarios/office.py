@@ -18,9 +18,9 @@ NPC_COLOR = (180, 100, 50)
 GREEN = (34, 139, 34)
 
 # Player settings
-player_pos = [100, HEIGHT // 2]
+player_pos = [350, HEIGHT // 2]
 player_speed = 0.1
-player_size = (50, 50)
+player_size = (75,75)
 VERTICAL_SPEED = 0.1  # Added vertical speed
 
 # Load Sprites
@@ -53,10 +53,13 @@ player_walk_right_2 = pygame.transform.scale(player_walk_right_2, player_size)
 player_walk_up_1 = pygame.transform.scale(player_walk_up_1, player_size)
 player_walk_up_2 = pygame.transform.scale(player_walk_up_2, player_size)
 
-# NPC sprite and law information (unchanged from your code)
+
 npc_sprite = pygame.Surface((50, 50))
 npc_sprite.fill(NPC_COLOR)
 
+# Load the background image and scale it to fit the screen size
+background_image = pygame.image.load("./images/office.jpeg.jpeg").convert()
+background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))  # Scale the background
 
 # Law NPCs with detailed information
 laws_info = [
@@ -227,7 +230,8 @@ def tutorial_level():
 
     while in_tutorial:
         screen.fill(WHITE)
-        
+        screen.blit(background_image, (0, 0))
+
         # Handle events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
