@@ -52,9 +52,9 @@ npc_positions = [
 
 # Map NPCs to their corresponding files
 npc_files = {
-    "tutorial": "tutorial.py",
-    "police": "police.py",
     "office": "office.py",
+    "police": "police.py",
+    "tutorial": "tutorial.py",
 }
 
 # Create the player class
@@ -103,10 +103,11 @@ def check_npc_interaction(player_x: float, player_y: float, npc_x: float, npc_y:
 def open_npc_file(npc_name: str):
     npc_file = npc_files.get(npc_name)
     if npc_file:
-        npc_path = os.path.join("C:/Users/Ho_Ti/Documents/GitHub/YYCHackTheChange2024/scenarios", npc_file)
+        current_directory = os.path.dirname(os.path.abspath(__file__))
+        npc_path = os.path.join(current_directory, npc_file)
         
         # Use the full path to the Python executable
-        python_executable = "C:/Users/Ho_Ti/AppData/Local/Programs/Python/Python313/python.exe"
+        python_executable = sys.executable
         
         try:
             subprocess.run([python_executable, npc_path])  # Run the NPC file using the specified Python executable
