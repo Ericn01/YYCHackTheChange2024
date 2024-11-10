@@ -17,6 +17,7 @@ RED = (200, 50, 50)
 NPC_COLOR = (180, 100, 50)
 GREEN = (34, 139, 34)
 DIALOGUE_BOX_COLOR = (0, 0, 0, 128)
+HUD_COLOR = (0, 0, 0, 180)
 
 # Player settings
 player_pos = [350, HEIGHT // 2]
@@ -126,8 +127,8 @@ laws_info = [
 # NPC positions with varied y positions
 npc_positions = [
     (190, HEIGHT // 2 - 140),
-    (340, HEIGHT // 2 + 230),
-    (600, HEIGHT // 2 - 130),
+    (210, HEIGHT // 2 + 170),
+    (650, HEIGHT // 2 - 130),
     (80, HEIGHT // 2 + 10),
     (710, HEIGHT // 2 + 115)
 ]
@@ -333,8 +334,21 @@ def office_level():
                 if check_npc_interaction(player_pos[0], player_pos[1], adjusted_x, npc_y):
                     current_details = laws_info[i]
                     if not showing_details:
-                        prompt_text = main_font.render("Press SPACE to learn more", True, BLACK)
-                        screen.blit(prompt_text, (WIDTH // 2 - prompt_text.get_width() // 2, HEIGHT - 50))
+                         # Show interaction message with HUD
+                        font = pygame.font.Font(None, 36)
+                        prompt_text = font.render("Press SPACE to interact", True, WHITE)  # Text color changed to white
+
+                        # Create a background HUD for the text
+                        text_width = prompt_text.get_width()
+                        text_height = prompt_text.get_height()
+                        hud_width = text_width + 30  # Add more padding around the text
+                        hud_height = text_height + 30  # Increase padding to cover the bottom part of the text
+
+                        # Draw HUD background (semi-transparent black)
+                        pygame.draw.rect(screen, HUD_COLOR, (WIDTH // 2 - hud_width // 2, HEIGHT - 50 - hud_height // 2, hud_width, hud_height))
+
+                        # Draw the text
+                        screen.blit(prompt_text, (WIDTH // 2 - prompt_text.get_width() // 2, HEIGHT - 63))
 
         # Draw the legal info with white background if we are showing details
         if showing_details and current_details:
