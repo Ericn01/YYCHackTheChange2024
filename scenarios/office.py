@@ -238,6 +238,13 @@ def office_level():
     last_update_time = pygame.time.get_ticks()
     space_pressed = False  # New flag to track space bar interaction
 
+    # Initialize the exit button outside the loop
+    exit_x = WIDTH - 150  # Button width is 150
+    exit_y = HEIGHT - 50  # Button height is 50
+
+    # Create the exit button (initially set to "Exit")
+    exit_button = Button(exit_x, exit_y, 150, 50, "Exit", RED)
+
     while in_office:
         screen.fill(WHITE)
         screen.blit(background_image, (0, 0))
@@ -259,6 +266,15 @@ def office_level():
                             space_pressed = True
                 elif event.key == pygame.K_ESCAPE:
                     showing_details = False
+            elif event.type in (pygame.MOUSEMOTION, pygame.MOUSEBUTTONDOWN):
+                # Handle the button event
+                if exit_button.handle_event(event):
+                    if exit_button.text == "Exit":
+                        pygame.quit()
+                        sys.exit()
+                    elif exit_button.text == "Next Level":
+                        # Handle the next level logic
+                        quiz()  # Or proceed to the next level
 
         # Movement controls with boundary checking
         if not showing_details:
@@ -382,45 +398,21 @@ def office_level():
                 y_offset = draw_text_wrapped(screen, detail, detail_font, WHITE, info_x + 10, y_offset, info_width - 20)
                 y_offset += 10  # Space between each detail
 
-        # Update the remaining text only when space is pressed and an NPC is interacted with
-        if space_pressed:
-            remaining_text = main_font.render(f"Find all {len(npc_positions) - len(visited_npcs)} remaining legal documents", True, WHITE)
-            screen.blit(remaining_text, (WIDTH // 2 - remaining_text.get_width() // 2, 20))
-            space_pressed = False  # Reset space flag after updating
-
-        # Draw exit logic
-        exit_x = WIDTH - 150  # Button width is 150
-        exit_y = HEIGHT - 50  # Button height is 50
-        exit_rect = pygame.Rect(exit_x, (HEIGHT // 2) + 900, 50, 50)
-        
-        # Only allow exit if all NPCs have been visited
+         # Update the exit button text and color based on whether all NPCs have been visited
         if len(visited_npcs) == len(npc_positions):
-            button_text = "Next Level"
-            button_color = GREEN
-            if exit_rect.collidepoint(player_pos[0] - player_x_offset, player_pos[1]):
-                # Trigger the quiz or next level logic when clicked
-                quiz()  # Call your quiz function here (or next level logic)
+            exit_button.text = "Next Level"
+            exit_button.color = GREEN
         else:
-            button_text = "Exit"
-            button_color = RED
-            remaining_text = main_font.render(f"Find all {len(npc_positions) - len(visited_npcs)} remaining legal documents", True, WHITE)
+            exit_button.text = "Exit"
+            exit_button.color = RED
+            remaining_text = main_font.render(
+                f"Find all {len(npc_positions) - len(visited_npcs)} remaining legal documents", True, WHITE)
             screen.blit(remaining_text, (WIDTH // 2 - remaining_text.get_width() // 2, 20))
-        exit_button = Button(exit_x, exit_y, 150, 50, button_text, button_color)
-        
-        if exit_button.handle_event(event):  # Checks if the exit button was clicked
-            if button_text == "Exit":
-                pygame.quit()  # Quit Pygame
-                sys.exit()  # Exit the program
-            elif button_text == "Next Level":
-                # Handle the next level logic (you can replace this with your own logic)
-                quiz()  # Or proceed to the next level
         exit_button.draw(screen)
         pygame.display.flip()
 
 
     
-    # Wait for a moment
-    pygame.time.wait(3000)
 
 if __name__ == "__main__":
     office_level()
