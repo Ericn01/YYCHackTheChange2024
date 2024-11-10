@@ -7,7 +7,7 @@ pygame.init()
 # Screen settings
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Canadian Law Tutorial")
+pygame.display.set_caption("Canadian Law For Employees")
 
 # Colors
 WHITE = (255, 255, 255)
@@ -16,16 +16,54 @@ BLUE = (70, 130, 180)
 RED = (200, 50, 50)
 NPC_COLOR = (180, 100, 50)
 GREEN = (34, 139, 34)
+DIALOGUE_BOX_COLOR = (0, 0, 0, 128)
+HUD_COLOR = (0, 0, 0, 180)
 
 # Player settings
-player_pos = [100, HEIGHT // 2]
-player_speed = 0.25
-player_size = (50, 50)
-VERTICAL_SPEED = 0.25  # Added vertical speed
+player_pos = [350, HEIGHT // 2]
+player_speed = 0.1
+player_size = (75,75)
+VERTICAL_SPEED = 0.1  # Added vertical speed
+npc_size = (25,25)
 
 # Load Sprites
-player_sprite = pygame.Surface(player_size)
-player_sprite.fill(BLUE)
+player_sprite_down = pygame.image.load('./images/look_down.png').convert_alpha()
+player_sprite_left = pygame.image.load('./images/look_left.png').convert_alpha()
+player_sprite_right = pygame.image.load('./images/look_right.png').convert_alpha()
+player_sprite_up = pygame.image.load('./images/look_up.png').convert_alpha()
+
+player_walk_down_1 = pygame.image.load('./images/walk_down_1.png').convert_alpha()
+player_walk_down_2 = pygame.image.load('./images/walk_down_2.png').convert_alpha()
+player_walk_left_1 = pygame.image.load('./images/walk_left_1.png').convert_alpha()
+player_walk_left_2 = pygame.image.load('./images/walk_left_2.png').convert_alpha()
+player_walk_right_1 = pygame.image.load('./images/walk_right_1.png').convert_alpha()
+player_walk_right_2 = pygame.image.load('./images/walk_right_2.png').convert_alpha()
+player_walk_up_1 = pygame.image.load('./images/walk_up_1.png').convert_alpha()
+player_walk_up_2 = pygame.image.load('./images/walk_up_2.png').convert_alpha()
+
+# Scale the images to the size of the player
+player_sprite_down = pygame.transform.scale(player_sprite_down, player_size)
+player_sprite_left = pygame.transform.scale(player_sprite_left, player_size)
+player_sprite_right = pygame.transform.scale(player_sprite_right, player_size)
+player_sprite_up = pygame.transform.scale(player_sprite_up, player_size)
+
+player_walk_down_1 = pygame.transform.scale(player_walk_down_1, player_size)
+player_walk_down_2 = pygame.transform.scale(player_walk_down_2, player_size)
+player_walk_left_1 = pygame.transform.scale(player_walk_left_1, player_size)
+player_walk_left_2 = pygame.transform.scale(player_walk_left_2, player_size)
+player_walk_right_1 = pygame.transform.scale(player_walk_right_1, player_size)
+player_walk_right_2 = pygame.transform.scale(player_walk_right_2, player_size)
+player_walk_up_1 = pygame.transform.scale(player_walk_up_1, player_size)
+player_walk_up_2 = pygame.transform.scale(player_walk_up_2, player_size)
+
+
+# Load the background image and scale it to fit the screen size
+background_image = pygame.image.load("./images/tut.png").convert()
+
+background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))  # Scale the background
+
+
+
 
 npc_sprite = pygame.Surface((50, 50))
 npc_sprite.fill(NPC_COLOR)
@@ -194,12 +232,17 @@ def tutorial_level():
     player_x_offset = 0
     visited_npcs = set()  # Track which NPCs have been visited
 
-    # Loading in the background image
-    background = pygame.image.load('images/main_menu_background2.jpg').convert()
+
+    showing_details = False
+    current_details = None
+    player_x_offset = 0
+    visited_npcs = set()  # Track which NPCs have been visited
+    walking_animation_frame = 0
+
 
     while in_tutorial:
         screen.fill(WHITE)
-
+        
         # Handle events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -220,11 +263,8 @@ def tutorial_level():
                     player_pos[0] += player_speed
                 else:
                     player_x_offset -= player_speed
-            elif keys[pygame.K_LEFT]:
-                if player_pos[0] > WIDTH // 2 or player_x_offset >= 0:
-                    player_pos[0] -= player_speed
-                else:
-                    player_x_offset += player_speed
+            elif keys[pygame.K_LEFT] and player_pos[0] > 0:
+                player_pos[0] -= player_speed
             
             # Vertical movement
             if keys[pygame.K_UP] and player_pos[1] > 0:
@@ -232,8 +272,30 @@ def tutorial_level():
             elif keys[pygame.K_DOWN] and player_pos[1] < HEIGHT - player_size[1]:
                 player_pos[1] += VERTICAL_SPEED
 
-        # Draw player
-        screen.blit(player_sprite, (player_pos[0], player_pos[1]))
+         # Draw player animation
+        if keys[pygame.K_RIGHT]:
+            if walking_animation_frame == 0:
+                screen.blit(player_walk_right_1, (player_pos[0], player_pos[1]))
+            else:
+                screen.blit(player_walk_right_2, (player_pos[0], player_pos[1]))
+        elif keys[pygame.K_LEFT]:
+            if walking_animation_frame == 0:
+                screen.blit(player_walk_left_1, (player_pos[0], player_pos[1]))
+            else:
+                screen.blit(player_walk_left_2, (player_pos[0], player_pos[1]))
+        elif keys[pygame.K_UP]:
+            if walking_animation_frame == 0:
+                screen.blit(player_walk_up_1, (player_pos[0], player_pos[1]))
+            else:
+                screen.blit(player_walk_up_2, (player_pos[0], player_pos[1]))
+        elif keys[pygame.K_DOWN]:
+            if walking_animation_frame == 0:
+                screen.blit(player_walk_down_1, (player_pos[0], player_pos[1]))
+            else:
+                screen.blit(player_walk_down_2, (player_pos[0], player_pos[1]))
+        else:
+            # When idle, use the "look" images
+            screen.blit(player_sprite_right, (player_pos[0], player_pos[1]))  # Default to right-facing idle state
 
         # Reset current_details if no NPC is nearby
         current_details = None
@@ -284,13 +346,13 @@ def tutorial_level():
             screen.blit(info_surface, (50, 50))
 
         # Draw exit
-        exit_x = npc_positions[-1][0] + player_x_offset
+        exit_x = npc_positions[-1][0] + 400 + player_x_offset
         exit_rect = pygame.Rect(exit_x, HEIGHT // 2, 50, 50)
         
         # Only allow exit if all NPCs have been visited
         if len(visited_npcs) == len(npc_positions):
             pygame.draw.rect(screen, GREEN, exit_rect)  # Green exit means it's available
-            if exit_rect.collidepoint(player_pos[0], player_pos[1]):
+            if exit_rect.collidepoint(player_pos[0] - player_x_offset, player_pos[1]):
                 quiz()
                 return
         else:
