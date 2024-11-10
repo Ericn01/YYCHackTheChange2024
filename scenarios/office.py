@@ -22,6 +22,7 @@ player_pos = [350, HEIGHT // 2]
 player_speed = 0.1
 player_size = (75,75)
 VERTICAL_SPEED = 0.1  # Added vertical speed
+npc_size = (25,25)
 
 # Load Sprites
 player_sprite_down = pygame.image.load('./images/look_down.png').convert_alpha()
@@ -53,12 +54,17 @@ player_walk_right_2 = pygame.transform.scale(player_walk_right_2, player_size)
 player_walk_up_1 = pygame.transform.scale(player_walk_up_1, player_size)
 player_walk_up_2 = pygame.transform.scale(player_walk_up_2, player_size)
 
+npc_image = pygame.image.load('./images/document.png').convert_alpha()
+npc_image = pygame.transform.scale(npc_image, npc_size)
+
+
+
 
 npc_sprite = pygame.Surface((50, 50))
 npc_sprite.fill(NPC_COLOR)
 
-# Load the background image and scale it to fit the screen size
-background_image = pygame.image.load("./images/office.jpeg.jpeg").convert()
+# Load the background and image and scale it to fit the screen size
+background_image = pygame.image.load("./images/office.png").convert()
 background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))  # Scale the background
 
 # Law NPCs with detailed information
@@ -118,18 +124,18 @@ laws_info = [
 
 # NPC positions with varied y positions
 npc_positions = [
-    (400, HEIGHT // 2 - 100),
-    (1200, HEIGHT // 2 + 50),
-    (2000, HEIGHT // 2 - 50),
-    (2800, HEIGHT // 2 + 100),
-    (3600, HEIGHT // 2 - 75)
+    (190, HEIGHT // 2 - 140),
+    (340, HEIGHT // 2 + 230),
+    (600, HEIGHT // 2 - 130),
+    (80, HEIGHT // 2 + 10),
+    (710, HEIGHT // 2 + 115)
 ]
 
 # Scenario-based quiz questions
 scenarios = [
     {
         "scenario": "David has been working at a company for 5 years. One day, his manager informs him that his position is being eliminated due to 'restructuring,' even though David’s performance has been excellent. David is not given any severance pay or notice",
-        "question": "Is David entitled to severance pay or notice under Canadian law?",
+        "question": "Is David entitled to severance phoay or notice under Canadian law?",
         "answer": "yes",
         "explanation": "Under the Canadian Employment Standards, employees are generally entitled to notice or severance pay if terminated without cause, especially if they have been employed for a certain period (usually more than 3 months)."
     },
@@ -219,8 +225,8 @@ def check_npc_interaction(player_x: float, player_y: float, npc_x: float, npc_y:
     distance = ((player_x - npc_x) ** 2 + (player_y - npc_y) ** 2) ** 0.5
     return distance < 60
 
-def tutorial_level():
-    in_tutorial = True
+def office_level():
+    in_office = True
     showing_details = False
     current_details = None
     player_x_offset = 0
@@ -228,7 +234,7 @@ def tutorial_level():
     walking_animation_frame = 0
     last_update_time = pygame.time.get_ticks()
 
-    while in_tutorial:
+    while in_office:
         screen.fill(WHITE)
         screen.blit(background_image, (0, 0))
 
@@ -248,18 +254,24 @@ def tutorial_level():
             keys = pygame.key.get_pressed()
             # Horizontal movement
             if keys[pygame.K_RIGHT]:
-                if player_pos[0] < WIDTH // 2 or player_x_offset <= -npc_positions[-1][0] + WIDTH - 200:
-                    player_pos[0] += player_speed
+                # Restrict movement based on background limits or screen boundary
+                if player_pos[0] < WIDTH - player_size[0] // 2 or player_x_offset <= -npc_positions[-1][0] + WIDTH - 200:
+                    player_pos[0] = min(player_pos[0] + player_speed, WIDTH - player_size[0])  # Limit to right screen boundary
                 else:
-                    player_x_offset -= player_speed
+                    player_x_offset = max(player_x_offset - player_speed, -npc_positions[-1][0] + WIDTH - 200)  # Limit background offset
                 # Update animation for right walking
                 walking_animation_frame = (walking_animation_frame + 1) % 2
                 last_update_time = pygame.time.get_ticks()
-            elif keys[pygame.K_LEFT] and player_pos[0] > 0:
-                player_pos[0] -= player_speed
+            elif keys[pygame.K_LEFT]:
+                # Restrict movement to the left boundary of the screen
+                if player_pos[0] > player_size[0] // 2:
+                    player_pos[0] = max(player_pos[0] - player_speed, 0)  # Limit to left screen boundary
+                else:
+                    player_x_offset = min(player_x_offset + player_speed, 0)  # Prevent background from going past starting point
                 # Update animation for left walking
                 walking_animation_frame = (walking_animation_frame + 1) % 2
                 last_update_time = pygame.time.get_ticks()
+
             
             # Vertical movement
             if keys[pygame.K_UP] and player_pos[1] > 0:
@@ -305,7 +317,8 @@ def tutorial_level():
         for i, (npc_x, npc_y) in enumerate(npc_positions):
             adjusted_x = npc_x + player_x_offset
             if 0 < adjusted_x < WIDTH:  # Only draw NPCs on screen
-                screen.blit(npc_sprite, (adjusted_x, npc_y))
+                # screen.blit(npc_sprite, (adjusted_x, npc_y))
+                screen.blit(npc_image,(adjusted_x,npc_y))
                 
                 # Check for interaction with this NPC
                 if check_npc_interaction(player_pos[0], player_pos[1], adjusted_x, npc_y):
@@ -359,7 +372,7 @@ def tutorial_level():
         else:
             pygame.draw.rect(screen, RED, exit_rect)  # Red exit means player needs to visit more NPCs
             # Draw instruction about visiting all NPCs
-            remaining_text = main_font.render(f"Visit all {len(npc_positions) - len(visited_npcs)} remaining NPCs", True, RED)
+            remaining_text = main_font.render(f"Find all {len(npc_positions) - len(visited_npcs)} remaining legal documents", True, WHITE)
             screen.blit(remaining_text, (WIDTH // 2 - remaining_text.get_width() // 2, 20))
 
         pygame.display.flip()
@@ -425,5 +438,5 @@ def quiz():
     pygame.time.wait(3000)
 
 if __name__ == "__main__":
-    tutorial_level()
+    office_level()
     pygame.quit()
