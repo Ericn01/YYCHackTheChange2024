@@ -337,7 +337,7 @@ def office_level():
         # Draw the legal info with white background if we are showing details
         if showing_details and current_details:
             info_width = WIDTH - 100  # Width of the info box
-            info_height = 300  # Height of the info box
+            info_height = 320  # Height of the info box
             info_x = 50
             info_y = HEIGHT // 4  # Center the box vertically
 
