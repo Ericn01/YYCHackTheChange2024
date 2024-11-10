@@ -194,9 +194,12 @@ def tutorial_level():
     player_x_offset = 0
     visited_npcs = set()  # Track which NPCs have been visited
 
+    # Loading in the background image
+    background = pygame.image.load('images/main_menu_background2.jpg').convert()
+
     while in_tutorial:
         screen.fill(WHITE)
-        
+
         # Handle events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -217,8 +220,11 @@ def tutorial_level():
                     player_pos[0] += player_speed
                 else:
                     player_x_offset -= player_speed
-            elif keys[pygame.K_LEFT] and player_pos[0] > 0:
-                player_pos[0] -= player_speed
+            elif keys[pygame.K_LEFT]:
+                if player_pos[0] > WIDTH // 2 or player_x_offset >= 0:
+                    player_pos[0] -= player_speed
+                else:
+                    player_x_offset += player_speed
             
             # Vertical movement
             if keys[pygame.K_UP] and player_pos[1] > 0:
@@ -278,13 +284,13 @@ def tutorial_level():
             screen.blit(info_surface, (50, 50))
 
         # Draw exit
-        exit_x = npc_positions[-1][0] + 400 + player_x_offset
+        exit_x = npc_positions[-1][0] + player_x_offset
         exit_rect = pygame.Rect(exit_x, HEIGHT // 2, 50, 50)
         
         # Only allow exit if all NPCs have been visited
         if len(visited_npcs) == len(npc_positions):
             pygame.draw.rect(screen, GREEN, exit_rect)  # Green exit means it's available
-            if exit_rect.collidepoint(player_pos[0] - player_x_offset, player_pos[1]):
+            if exit_rect.collidepoint(player_pos[0], player_pos[1]):
                 quiz()
                 return
         else:
