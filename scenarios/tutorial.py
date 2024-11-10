@@ -233,6 +233,7 @@ def tutorial_level():
     visited_npcs = set()  # Track which NPCs have been visited
 
 
+
     showing_details = False
     current_details = None
     player_x_offset = 0
@@ -241,7 +242,8 @@ def tutorial_level():
 
 
     while in_tutorial:
-        screen.fill(WHITE)
+          # Draw the background image
+        screen.blit(background_image, (0, 0))
         
         # Handle events
         for event in pygame.event.get():
