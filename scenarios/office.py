@@ -117,7 +117,7 @@ laws_info = [
             "• Employees are legally protected if they form or join a union.",
             "• Employers cannot fire, demote, or discriminate against employees for union activities.",
             "• Unionized employees have the right to negotiate wages, benefits, and working conditions collectively.",
-            "• sCollective agreements ensure better protection for union members in areas like dispute resolution."
+            "• Collective agreements ensure better protection for union members in areas like dispute resolution."
         ]
     }
 ]
