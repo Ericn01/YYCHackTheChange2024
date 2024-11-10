@@ -73,50 +73,50 @@ laws_info = [
         "title": "Employment Standards",
         "description": "The Employment Standards Act sets out the basic rights of workers in the workplace, including hours of work, wages, and termination.",
         "details": [
-            "Employees are entitled to minimum wage and overtime pay for hours worked beyond the standard workweek.",
-            "Employers must provide notice or severance pay when terminating an employee without cause.",
-            "Employees are entitled to paid vacation and rest periods.",
-            "Termination and dismissal rules are outlined, and employees are entitled to written notice."
+            "• Employees are entitled to minimum wage and overtime pay for hours worked beyond the standard workweek.",
+            "• Employers must provide notice or severance pay when terminating an employee without cause.",
+            "• Employees are entitled to paid vacation and rest periods.",
+            "• Termination and dismissal rules are outlined, and employees are entitled to written notice."
         ]
     },
     {
         "title": "Anti-Discrimination",
         "description": "The Canadian Human Rights Act prohibits discrimination in the workplace on the basis of various protected grounds, including race, age, gender, and disability.",
         "details": [
-            "Discrimination based on age, race, gender, or disability is prohibited in employment practices.",
-            "Employees are entitled to reasonable accommodation for disabilities or family responsibilities.",
-            "Employers cannot treat employees unfairly based on personal characteristics like gender, race, or sexual orientation.",
-            "Includes protection against harassment and bullying in the workplace."
+            "• Discrimination based on age, race, gender, or disability is prohibited in employment practices.",
+            "• Employees are entitled to reasonable accommodation for disabilities or family responsibilities.",
+            "• Employers cannot treat employees unfairly based on personal characteristics like gender, race, or sexual orientation.",
+            "• Includes protection against harassment and bullying in the workplace."
         ]
     },
     {
         "title": "Occupational Health and Safety",
         "description": "The Occupational Health and Safety Act requires employers to provide a safe working environment and protect employees from workplace hazards.",
         "details": [
-            "Employees have the right to refuse unsafe work without fear of retaliation.",
-            "Employers must provide necessary safety equipment and conduct safety training.",
-            "Workplace incidents or injuries must be reported and investigated.",
-            "Employees are entitled to workers' compensation benefits in case of workplace injury or illness."
+            "• Employees have the right to refuse unsafe work without fear of retaliation.",
+            "• Employers must provide necessary safety equipment and conduct safety training.",
+            "• Workplace incidents or injuries must be reported and investigated.",
+            "• Employees are entitled to workers' compensation benefits in case of workplace injury or illness."
         ]
     },
     {
         "title": "Employment Insurance (EI)",
         "description": "Employment Insurance (EI) benefits provide temporary financial assistance to workers who lose their job or are unable to work due to illness or family responsibilities.",
         "details": [
-            "Employees who lose their job through no fault of their own are entitled to EI benefits.",
-            "Employees can receive EI benefits during maternity or parental leave.",
-            "Employees are eligible for sickness benefits under EI if they are unable to work due to illness.",
-            "EI benefits are based on a worker’s insurable earnings and the duration of employment."
+            "• Employees who lose their job through no fault of their own are entitled to EI benefits.",
+            "• Employees can receive EI benefits during maternity or parental leave.",
+            "• Employees are eligible for sickness benefits under EI if they are unable to work due to illness.",
+            "• EI benefits are based on a worker’s insurable earnings and the duration of employment."
         ]
     },
     {
         "title": "Union Rights",
         "description": "Employees in Canada have the right to join unions and engage in collective bargaining without fear of retaliation from employers.",
         "details": [
-            "Employees are legally protected if they form or join a union.",
-            "Employers cannot fire, demote, or discriminate against employees for union activities.",
-            "Unionized employees have the right to negotiate wages, benefits, and working conditions collectively.",
-            "Collective agreements ensure better protection for union members in areas like dispute resolution."
+            "• Employees are legally protected if they form or join a union.",
+            "• Employers cannot fire, demote, or discriminate against employees for union activities.",
+            "• Unionized employees have the right to negotiate wages, benefits, and working conditions collectively.",
+            "• sCollective agreements ensure better protection for union members in areas like dispute resolution."
         ]
     }
 ]
@@ -233,6 +233,7 @@ def office_level():
     visited_npcs = set()  # Track which NPCs have been visited
     walking_animation_frame = 0
     last_update_time = pygame.time.get_ticks()
+    space_pressed = False  # New flag to track space bar interaction
 
     while in_office:
         screen.fill(WHITE)
@@ -245,7 +246,14 @@ def office_level():
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and current_details is not None:
+                    # Space pressed to show details
                     showing_details = not showing_details
+                    if current_details is not None and not showing_details:
+                        # The index of the NPC in the `laws_info` list
+                        npc_index = laws_info.index(current_details)
+                        if npc_index not in visited_npcs:
+                            visited_npcs.add(npc_index)
+                            space_pressed = True
                 elif event.key == pygame.K_ESCAPE:
                     showing_details = False
 
@@ -272,7 +280,6 @@ def office_level():
                 walking_animation_frame = (walking_animation_frame + 1) % 2
                 last_update_time = pygame.time.get_ticks()
 
-            
             # Vertical movement
             if keys[pygame.K_UP] and player_pos[1] > 0:
                 player_pos[1] -= VERTICAL_SPEED
@@ -326,40 +333,39 @@ def office_level():
                     if not showing_details:
                         prompt_text = main_font.render("Press SPACE to learn more", True, BLACK)
                         screen.blit(prompt_text, (WIDTH // 2 - prompt_text.get_width() // 2, HEIGHT - 50))
-                    visited_npcs.add(i)
 
-        # Show detailed information when activated
-        if showing_details and current_details is not None:
-            # Draw semi-transparent background
-            s = pygame.Surface((WIDTH, HEIGHT))
-            s.set_alpha(128)
-            s.fill(WHITE)
-            screen.blit(s, (0, 0))
+        # Draw the legal info with white background if we are showing details
+        if showing_details and current_details:
+            info_width = WIDTH - 100  # Width of the info box
+            info_height = 300  # Height of the info box
+            info_x = 50
+            info_y = HEIGHT // 4  # Center the box vertically
+
+            # Draw the white background for the legal info
+            pygame.draw.rect(screen, WHITE, pygame.Rect(info_x, info_y, info_width, info_height))
+
+            # Draw the title and description with more space in between
+            y_offset = draw_text_wrapped(screen, f"{current_details['title']}", title_font, BLACK, info_x + 10, info_y + 10, info_width - 20)
             
-            # Draw information panel
-            info_surface = pygame.Surface((WIDTH - 100, HEIGHT - 100))
-            info_surface.fill(WHITE)
-            pygame.draw.rect(info_surface, BLACK, info_surface.get_rect(), 2)
-            
-            # Title
-            title_surface = title_font.render(current_details["title"], True, BLACK)
-            info_surface.blit(title_surface, (20, 20))
-            
-            # Description
-            y_offset = draw_text_wrapped(info_surface, current_details["description"], main_font, BLACK, 20, 80, WIDTH - 140)
-            
-            # Details
-            y_offset += 20
+            # Add additional vertical space (increase this value for more spacing)
+            y_offset += 20  # Space between title and description
+            y_offset = draw_text_wrapped(screen, f"{current_details['description']}", main_font, BLACK, info_x + 10, y_offset, info_width - 20)
+
+            # Add more space between the description and the details
+            y_offset += 20  # Space between description and details
+
+            # Draw detailed information with additional space between each point
             for detail in current_details["details"]:
-                y_offset = draw_text_wrapped(info_surface, "• " + detail, detail_font, BLACK, 20, y_offset, WIDTH - 140)
-            
-            # Draw close instruction
-            close_text = main_font.render("Press SPACE or ESC to close", True, BLACK)
-            info_surface.blit(close_text, (20, HEIGHT - 160))
-            
-            screen.blit(info_surface, (50, 50))
+                y_offset = draw_text_wrapped(screen, detail, detail_font, BLACK, info_x + 10, y_offset, info_width - 20)
+                y_offset += 10  # Space between each detail
 
-        # Draw exit
+        # Update the remaining text only when space is pressed and an NPC is interacted with
+        if space_pressed:
+            remaining_text = main_font.render(f"Find all {len(npc_positions) - len(visited_npcs)} remaining legal documents", True, WHITE)
+            screen.blit(remaining_text, (WIDTH // 2 - remaining_text.get_width() // 2, 20))
+            space_pressed = False  # Reset space flag after updating
+
+        # Draw exit logic
         exit_x = npc_positions[-1][0] + 400 + player_x_offset
         exit_rect = pygame.Rect(exit_x, HEIGHT // 2, 50, 50)
         
@@ -377,56 +383,7 @@ def office_level():
 
         pygame.display.flip()
 
-def quiz():
-    current_scenario = 0
-    showing_explanation = False
-    
-    yes_button = Button(WIDTH // 4 - 100, HEIGHT - 100, 200, 50, "YES", GREEN)
-    no_button = Button(3 * WIDTH // 4 - 100, HEIGHT - 100, 200, 50, "NO", RED)
 
-    while current_scenario < len(scenarios):
-        screen.fill(WHITE)
-        
-        scenario = scenarios[current_scenario]
-        
-        if not showing_explanation:
-            # Draw scenario
-            y_offset = draw_text_wrapped(screen, "Scenario:", title_font, BLACK, 50, 50, WIDTH - 100)
-            y_offset = draw_text_wrapped(screen, scenario["scenario"], main_font, BLACK, 50, y_offset + 20, WIDTH - 100)
-            
-            # Draw question
-            y_offset = draw_text_wrapped(screen, "Question:", title_font, BLACK, 50, y_offset + 40, WIDTH - 100)
-            y_offset = draw_text_wrapped(screen, scenario["question"], main_font, BLACK, 50, y_offset + 20, WIDTH - 100)
-            
-            # Draw buttons
-            yes_button.draw(screen)
-            no_button.draw(screen)
-        else:
-            # Draw explanation
-            y_offset = draw_text_wrapped(screen, "Explanation:", title_font, BLACK, 50, 50, WIDTH - 100)
-            y_offset = draw_text_wrapped(screen, scenario["explanation"], main_font, BLACK, 50, y_offset + 20, WIDTH - 100)
-            
-            # Draw continue instruction
-            continue_text = main_font.render("Press SPACE to continue", True, BLACK)
-            screen.blit(continue_text, (WIDTH // 2 - continue_text.get_width() // 2, HEIGHT - 100))
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN and showing_explanation:
-                if event.key == pygame.K_SPACE:
-                    showing_explanation = False
-                    current_scenario += 1
-            elif not showing_explanation:
-                if yes_button.handle_event(event):
-                    if scenario["answer"] == "yes":
-                        showing_explanation = True
-                elif no_button.handle_event(event):
-                    if scenario["answer"] == "no":
-                        showing_explanation = True
-
-        pygame.display.flip()
 
     # Show completion screen
     screen.fill(WHITE)
