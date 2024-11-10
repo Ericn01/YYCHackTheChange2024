@@ -128,7 +128,7 @@ laws_info = [
 npc_positions = [
     (190, HEIGHT // 2 - 140),
     (210, HEIGHT // 2 + 170),
-    (650, HEIGHT // 2 - 130),
+    (600, HEIGHT // 2 - 130),
     (80, HEIGHT // 2 + 10),
     (710, HEIGHT // 2 + 115)
 ]
@@ -406,6 +406,14 @@ def office_level():
             remaining_text = main_font.render(f"Find all {len(npc_positions) - len(visited_npcs)} remaining legal documents", True, WHITE)
             screen.blit(remaining_text, (WIDTH // 2 - remaining_text.get_width() // 2, 20))
         exit_button = Button(exit_x, exit_y, 150, 50, button_text, button_color)
+        
+        if exit_button.handle_event(event):  # Checks if the exit button was clicked
+            if button_text == "Exit":
+                pygame.quit()  # Quit Pygame
+                sys.exit()  # Exit the program
+            elif button_text == "Next Level":
+                # Handle the next level logic (you can replace this with your own logic)
+                quiz()  # Or proceed to the next level
         exit_button.draw(screen)
         pygame.display.flip()
 
